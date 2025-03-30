@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KrishiApp - Multi-Platform Access</title>
+    <style>
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* Header Styles */
+        header {
+            background-color: #2E8B57;
+            color: white;
+            padding: 15px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo img {
+            height: 40px;
+            margin-right: 10px;
+        }
+        
+        .logo h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        /* Main Content Styles */
+        .platform-section {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            padding: 25px;
+            margin-top: 30px;
+        }
+        
+        .section-title {
+            color: #2E8B57;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+            text-align: center;
+        }
+        
+        .section-subtitle {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #555;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        /* Platform Cards */
+        .platform-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+        
+        .platform-card {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.08);
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s ease;
+            border-top: 4px solid #2E8B57;
+        }
+        
+        .platform-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        
+        .platform-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #e8f5e9;
+            border-radius: 50%;
+        }
+        
+        .platform-icon img {
+            width: 50px;
+            height: 50px;
+        }
+        
+        .platform-name {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #2E8B57;
+        }
+        
+        .platform-description {
+            color: #555;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+        }
+        
+        .platform-features {
+            text-align: left;
+            margin-bottom: 25px;
+        }
+        
+        .platform-features li {
+            margin-bottom: 8px;
+            position: relative;
+            padding-left: 25px;
+            list-style-type: none;
+        }
+        
+        .platform-features li:before {
+            content: "✓";
+            color: #2E8B57;
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+        
+        .btn-platform {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #2E8B57;
+            color: white;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+        }
+        
+        .btn-platform:hover {
+            background-color: #247348;
+        }
+        
+        /* Demo Request Section */
+        .demo-request {
+            background-color: #f0f7f3;
+            border-radius: 8px;
+            padding: 30px;
+            margin-top: 50px;
+            text-align: center;
+        }
+        
+        .demo-title {
+            color: #2E8B57;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+        
+        .demo-form {
+            max-width: 500px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+        
+        .form-group {
+            text-align: left;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        .form-group input, 
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        .btn-submit {
+            background-color: #2E8B57;
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 4px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-submit:hover {
+            background-color: #247348;
+        }
+        
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .platform-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .logo {
+                margin-bottom: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container header-content">
+            <div class="logo">
+                <img src="https://via.placeholder.com/40x40?text=KA" alt="KrishiApp Logo">
+                <h1>KrishiApp</h1>
+            </div>
+            <nav>
+                <button class="btn-platform" style="width: auto;">Farmer Login</button>
+            </nav>
+        </div>
+    </header>
+    
+    <main class="container">
+        <div class="platform-section">
+            <h2 class="section-title">Multi-Platform Access</h2>
+            <p class="section-subtitle">Get agricultural insights via WhatsApp, SMS, IVR, or mobile app - choose what works best for you</p>
+            
+            <div class="platform-cards">
+                <!-- WhatsApp Platform -->
+                <div class="platform-card">
+                    <div class="platform-icon">
+                        <img src="https://cdn-icons-png.flaticon.com/512/220/220236.png" alt="WhatsApp">
+                    </div>
+                    <h3 class="platform-name">WhatsApp</h3>
+                    <p class="platform-description">Receive daily updates, pest alerts, and expert advice directly on WhatsApp</p>
+                    <ul class="platform-features">
+                        <li>Instant notifications</li>
+                        <li>Two-way communication</li>
+                        <li>Multimedia support</li>
+                        <li>Works on any phone</li>
+                    </ul>
+                    <button class="btn-platform" onclick="connectPlatform('whatsapp')">Connect via WhatsApp</button>
+                </div>
+                
+                <!-- SMS Platform -->
+                <div class="platform-card">
+                    <div class="platform-icon">
+                        <img src="https://cdn-icons-png.flaticon.com/512/2885/2885257.png" alt="SMS">
+                    </div>
+                    <h3 class="platform-name">SMS</h3>
+                    <p class="platform-description">Simple text messages with critical alerts and farming tips</p>
+                    <ul class="platform-features">
+                        <li>Works on basic phones</li>
+                        <li>No internet required</li>
+                        <li>Daily weather updates</li>
+                        <li>Market prices</li>
+                    </ul>
+                    <button class="btn-platform" onclick="connectPlatform('sms')">Subscribe via SMS</button>
+                </div>
+                
+                <!-- IVR Platform -->
+                <div class="platform-card">
+                    <div class="platform-icon">
+                        <img src="https://cdn-icons-png.flaticon.com/512/3059/3059518.png" alt="IVR">
+                    </div>
+                    <h3 class="platform-name">IVR (Voice Calls)</h3>
+                    <p class="platform-description">Listen to agricultural advice in your local language</p>
+                    <ul class="platform-features">
+                        <li>Available in 12 languages</li>
+                        <li>Call anytime for updates</li>
+                        <li>Interactive voice menus</li>
+                        <li>No reading required</li>
+                    </ul>
+                    <button class="btn-platform" onclick="connectPlatform('ivr')">Call IVR Service</button>
+                </div>
+                
+                <!-- Mobile App Platform -->
+                <div class="platform-card">
+                    <div class="platform-icon">
+                        <img src="https://cdn-icons-png.flaticon.com/512/2702/2702602.png" alt="Mobile App">
+                    </div>
+                    <h3 class="platform-name">Mobile App</h3>
+                    <p class="platform-description">Full-featured application with advanced tools and analytics</p>
+                    <ul class="platform-features">
+                        <li>Soil health tracking</li>
+                        <li>Pest identification</li>
+                        <li>Video tutorials</li>
+                        <li>Offline access</li>
+                    </ul>
+                    <button class="btn-platform" onclick="connectPlatform('app')">Download App</button>
+                </div>
+            </div>
+            
+            <div class="demo-request">
+                <h3 class="demo-title">Not sure which platform to choose?</h3>
+                <p>Request a free demo of any platform to see how it works</p>
+                
+                <form class="demo-form" id="demoForm">
+                    <div class="form-group">
+                        <label for="name">Full Name</label>
+                        <input type="text" id="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Phone Number</label>
+                        <input type="tel" id="phone" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="platform">Platform of Interest</label>
+                        <select id="platform" required>
+                            <option value="">Select platform</option>
+                            <option value="whatsapp">WhatsApp</option>
+                            <option value="sms">SMS</option>
+                            <option value="ivr">IVR (Voice Calls)</option>
+                            <option value="app">Mobile App</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn-submit">Request Demo</button>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Platform connection functions
+        function connectPlatform(platform) {
+            const platforms = {
+                whatsapp: {
+                    message: "You'll receive a WhatsApp message with instructions to complete your subscription.",
+                    action: "https://wa.me/1234567890?text=Subscribe%20to%20KrishiApp"
+                },
+                sms: {
+                    message: "Please send 'SUBSCRIBE' to 12345 to receive SMS updates.",
+                    action: "sms:12345?body=SUBSCRIBE"
+                },
+                ivr: {
+                    message: "Call 1-800-123-4567 to access our IVR service. Standard call rates apply.",
+                    action: "tel:18001234567"
+                },
+                app: {
+                    message: "Redirecting you to download the KrishiApp mobile application.",
+                    action: "https://play.google.com/store/apps/details?id=com.krishi.app"
+                }
+            };
+            
+            alert(Connecting to ${platform} service:\n\n${platforms[platform].message});
+            window.location.href = platforms[platform].action;
+        }
+
+        // Demo request form handling
+        document.getElementById('demoForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('name').value;
+            const phone = document.getElementById('phone').value;
+            const platform = document.getElementById('platform').value;
+            
+            // In a real app, you would send this data to your backend
+            alert(Thank you, ${name}! We'll contact you at ${phone} to arrange your ${platform} demo.);
+            
+            // Reset form
+            this.reset();
+        });
+
+        // Initialize platform cards with animation
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.platform-card');
+            cards.forEach((card, index) => {
+                // Add slight delay to each card's animation
+                card.style.animationDelay = ${index * 0.1}s;
+            });
+        });
+    </script>
+</body>
+</html>

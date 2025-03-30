@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KrishiAI - Nutrient Management</title>
+    <style>
+        :root {
+            --primary: #2e7d32;
+            --secondary: #8bc34a;
+            --accent: #ffc107;
+            --light: #f1f8e9;
+            --dark: #1b5e20;
+            --nitrogen: #3498db;
+            --phosphorus: #e74c3c;
+            --potassium: #f39c12;
+            --organic: #27ae60;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            overflow-x: hidden;
+        }
+        
+        .nutrient-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .nutrient-header {
+            background: linear-gradient(135deg, var(--primary), var(--dark));
+            color: white;
+            padding: 30px 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .nutrient-header h1 {
+            font-size: 36px;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .nutrient-header p {
+            font-size: 18px;
+            max-width: 700px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .nutrient-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('https://images.unsplash.com/photo-1586771107445-d3ca888129ce?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            opacity: 0.3;
+            z-index: 1;
+        }
+        
+        .nutrient-controls {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 30px 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: center;
+        }
+        
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            min-width: 200px;
+            flex: 1;
+        }
+        
+        .control-group label {
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark);
+        }
+        
+        .control-group select, .control-group input {
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        
+        .control-button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .control-button:hover {
+            background-color: var(--dark);
+            transform: translateY(-2px);
+        }
+        
+        .nutrient-view {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+        
+        .map-container {
+            height: 500px;
+            background-color: #eee;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        #nutrient-map {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .map-overlay {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            max-width: 300px;
+        }
+        
+        .map-overlay h3 {
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+        
+        .map-overlay p {
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+        
+        .legend {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+        
+        .nutrient-results {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .nutrient-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .nutrient-card h3 {
+            color: var(--dark);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .nutrient-card h3 i {
+            color: var(--primary);
+        }
+        
+        .nutrient-levels {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .nutrient-bar {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .nutrient-label {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 500;
+        }
+        
+        .nutrient-name {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .nutrient-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        
+        .nitrogen {
+            background-color: var(--nitrogen);
+        }
+        
+        .phosphorus {
+            background-color: var(--phosphorus);
+        }
+        
+        .potassium {
+            background-color: var(--potassium);
+        }
+        
+        .organic {
+            background-color: var(--organic);
+        }
+        
+        .progress-container {
+            width: 100%;
+            height: 10px;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            border-radius: 5px;
+        }
+        
+        .progress-nitrogen {
+            background-color: var(--nitrogen);
+            width: 65%;
+        }
+        
+        .progress-phosphorus {
+            background-color: var(--phosphorus);
+            width: 40%;
+        }
+        
+        .progress-potassium {
+            background-color: var(--potassium);
+            width: 55%;
+        }
+        
+        .progress-organic {
+            background-color: var(--organic);
+            width: 35%;
+        }
+        
+        .recommendations-list {
+            margin-top: 20px;
+        }
+        
+        .recommendation-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .recommendation-item:last-child {
+            border-bottom: none;
+        }
+        
+        .recommendation-icon {
+            color: var(--primary);
+            font-size: 18px;
+            margin-top: 2px;
+        }
+        
+        .fertilizer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .fertilizer-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+            border-left: 4px solid var(--primary);
+        }
+        
+        .fertilizer-card h4 {
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+        
+        .fertilizer-details {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        .fertilizer-amount {
+            font-weight: bold;
+            color: var(--primary);
+        }
+        
+        .soil-test {
+            margin-top: 20px;
+            background-color: var(--light);
+            padding: 15px;
+            border-radius: 8px;
+        }
+        
+        .soil-test h4 {
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+        
+        .soil-test p {
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+        
+        .soil-test-button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .soil-test-button:hover {
+            background-color: var(--dark);
+        }
+        
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            color: white;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--accent);
+            animation: spin 1s ease-in-out infinite;
+            margin-bottom: 20px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        @media (max-width: 768px) {
+            .nutrient-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .control-group {
+                width: 100%;
+            }
+            
+            .map-container {
+                height: 400px;
+            }
+            
+            .map-overlay {
+                position: static;
+                max-width: 100%;
+                margin-bottom: 20px;
+            }
+            
+            .nutrient-results {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+</head>
+<body>
+    <div class="nutrient-header">
+        <div class="nutrient-bg"></div>
+        <h1>Precision Nutrient Management</h1>
+        <p>AI-powered soil nutrition analysis and fertilizer recommendations</p>
+    </div>
+    
+    <div class="nutrient-container">
+        <div class="nutrient-controls">
+            <div class="control-group">
+                <label for="field-select">Select Field</label>
+                <select id="field-select">
+                    <option value="field1">Main Wheat Field (2.5 acres)</option>
+                    <option value="field2">Vegetable Plot (1 acre)</option>
+                    <option value="field3">Rice Paddy (3 acres)</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label for="crop-select">Current Crop</label>
+                <select id="crop-select">
+                    <option value="wheat">Wheat</option>
+                    <option value="rice">Rice</option>
+                    <option value="corn">Corn</option>
+                    <option value="vegetables">Mixed Vegetables</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label for="growth-stage">Growth Stage</label>
+                <select id="growth-stage">
+                    <option value="seedling">Seedling</option>
+                    <option value="vegetative">Vegetative</option>
+                    <option value="flowering" selected>Flowering</option>
+                    <option value="fruiting">Fruiting</option>
+                </select>
+            </div>
+            <button class="control-button" id="analyze-btn">
+                <i class="fas fa-flask"></i> Analyze Soil
+            </button>
+        </div>
+        
+        <div class="nutrient-view">
+            <div class="map-container">
+                <div id="nutrient-map"></div>
+                <div class="map-overlay">
+                    <h3><i class="fas fa-map-marked-alt"></i> Nutrient Zones</h3>
+                    <p>Soil nutrient distribution across your field</p>
+                    <div class="legend">
+                        <div class="legend-item">
+                            <div class="legend-color nitrogen"></div>
+                            <span>Nitrogen (N)</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color phosphorus"></div>
+                            <span>Phosphorus (P)</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color potassium"></div>
+                            <span>Potassium (K)</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color organic"></div>
+                            <span>Organic Matter</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="nutrient-results">
+                <div class="nutrient-card">
+                    <h3><i class="fas fa-chart-bar"></i> Soil Nutrient Levels</h3>
+                    <div class="nutrient-levels">
+                        <div class="nutrient-bar">
+                            <div class="nutrient-label">
+                                <div class="nutrient-name">
+                                    <div class="nutrient-indicator nitrogen"></div>
+                                    <span>Nitrogen (N)</span>
+                                </div>
+                                <span>65% (Medium)</span>
+                            </div>
+                            <div class="progress-container">
+                                <div class="progress-bar progress-nitrogen"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="nutrient-bar">
+                            <div class="nutrient-label">
+                                <div class="nutrient-name">
+                                    <div class="nutrient-indicator phosphorus"></div>
+                                    <span>Phosphorus (P)</span>
+                                </div>
+                                <span>40% (Low)</span>
+                            </div>
+                            <div class="progress-container">
+                                <div class="progress-bar progress-phosphorus"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="nutrient-bar">
+                            <div class="nutrient-label">
+                                <div class="nutrient-name">
+                                    <div class="nutrient-indicator potassium"></div>
+                                    <span>Potassium (K)</span>
+                                </div>
+                                <span>55% (Medium)</span>
+                            </div>
+                            <div class="progress-container">
+                                <div class="progress-bar progress-potassium"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="nutrient-bar">
+                            <div class="nutrient-label">
+                                <div class="nutrient-name">
+                                    <div class="nutrient-indicator organic"></div>
+                                    <span>Organic Matter</span>
+                                </div>
+                                <span>35% (Low)</span>
+                            </div>
+                            <div class="progress-container">
+                                <div class="progress-bar progress-organic"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="soil-test">
+                        <h4><i class="fas fa-vial"></i> Soil Health Card</h4>
+                        <p>Last tested: 15 days ago. Next test recommended in 2 weeks.</p>
+                        <button class="soil-test-button">
+                            <i class="fas fa-calendar-alt"></i> Schedule Soil Test
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="nutrient-card">
+                    <h3><i class="fas fa-lightbulb"></i> Fertilizer Recommendations</h3>
+                    <div class="recommendations-list">
+                        <div class="recommendation-item">
+                            <i class="fas fa-seedling recommendation-icon"></i>
+                            <div>
+                                <p>Apply <strong>Urea (46-0-0)</strong> at <strong>50 kg/acre</strong> to boost nitrogen levels before flowering stage.</p>
+                            </div>
+                        </div>
+                        <div class="recommendation-item">
+                            <i class="fas fa-seedling recommendation-icon"></i>
+                            <div>
+                                <p>Use <strong>DAP (18-46-0)</strong> at <strong>30 kg/acre</strong> to address phosphorus deficiency.</p>
+                            </div>
+                        </div>
+                        <div class="recommendation-item">
+                            <i class="fas fa-seedling recommendation-icon"></i>
+                            <div>
+                                <p>Consider <strong>organic compost</strong> at <strong>2 tons/acre</strong> to improve long-term soil health.</p>
+                            </div>
+                        </div>
+                        <div class="recommendation-item">
+                            <i class="fas fa-seedling recommendation-icon"></i>
+                            <div>
+                                <p>Apply <strong>MOP (0-0-60)</strong> at <strong>20 kg/acre</strong> during next irrigation for potassium.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="nutrient-card">
+                    <h3><i class="fas fa-shopping-basket"></i> Suggested Fertilizers</h3>
+                    <div class="fertilizer-grid">
+                        <div class="fertilizer-card">
+                            <h4>Urea (46-0-0)</h4>
+                            <div class="fertilizer-details">Nitrogen fertilizer for vegetative growth</div>
+                            <div class="fertilizer-amount">50 kg/acre needed</div>
+                        </div>
+                        <div class="fertilizer-card">
+                            <h4>DAP (18-46-0)</h4>
+                            <div class="fertilizer-details">Phosphorus-rich for root development</div>
+                            <div class="fertilizer-amount">30 kg/acre needed</div>
+                        </div>
+                        <div class="fertilizer-card">
+                            <h4>MOP (0-0-60)</h4>
+                            <div class="fertilizer-details">Potassium for flowering & fruiting</div>
+                            <div class="fertilizer-amount">20 kg/acre needed</div>
+                        </div>
+                        <div class="fertilizer-card">
+                            <h4>Organic Compost</h4>
+                            <div class="fertilizer-details">Improves soil structure and nutrients</div>
+                            <div class="fertilizer-amount">2 tons/acre needed</div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 20px;">
+                        <button class="control-button" style="width: 100%;">
+                            <i class="fas fa-truck"></i> Order Fertilizers
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="loading" id="loading-screen" style="display: none;">
+        <div class="spinner"></div>
+        <h3>Analyzing Soil Nutrients</h3>
+        <p>Processing soil data and satellite imagery...</p>
+    </div>
+    
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script>
+        // Initialize map
+        const map = L.map('nutrient-map').setView([20.5937, 78.9629], 16);
+        
+        // Add satellite tile layer (using OpenStreetMap as placeholder)
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+        
+        // Simulate field boundary (in a real app, this would be the actual farmer's field)
+        const fieldBoundary = L.polygon([
+            [20.594, 78.961],
+            [20.594, 78.963],
+            [20.592, 78.963],
+            [20.592, 78.961]
+        ], {
+            color: '#2e7d32',
+            weight: 2,
+            fillOpacity: 0.1
+        }).addTo(map);
+        
+        // Simulate nutrient zones
+        const nitrogenZone = L.polygon([
+            [20.5938, 78.9615],
+            [20.5938, 78.9625],
+            [20.5925, 78.9625],
+            [20.5925, 78.9615]
+        ], {
+            color: '#3498db',
+            weight: 1,
+            fillColor: '#3498db',
+            fillOpacity: 0.3
+        }).addTo(map).bindTooltip("Nitrogen: Medium (65%)");
+        
+        const phosphorusZone = L.polygon([
+            [20.594, 78.961],
+            [20.594, 78.9615],
+            [20.592, 78.9615],
+            [20.592, 78.961]
+        ], {
+            color: '#e74c3c',
+            weight: 1,
+            fillColor: '#e74c3c',
+            fillOpacity: 0.3
+        }).addTo(map).bindTooltip("Phosphorus: Low (40%)");
+        
+        const potassiumZone = L.polygon([
+            [20.594, 78.9615],
+            [20.594, 78.962],
+            [20.5938, 78.962],
+            [20.5938, 78.9615]
+        ], {
+            color: '#f39c12',
+            weight: 1,
+            fillColor: '#f39c12',
+            fillOpacity: 0.3
+        }).addTo(map).bindTooltip("Potassium: Medium (55%)");
+        
+        const organicZone = L.polygon([
+            [20.5935, 78.9625],
+            [20.5935, 78.963],
+            [20.592, 78.963],
+            [20.592, 78.9625]
+        ], {
+            color: '#27ae60',
+            weight: 1,
+            fillColor: '#27ae60',
+            fillOpacity: 0.3
+        }).addTo(map).bindTooltip("Organic Matter: Low (35%)");
+        
+        // Add soil sample markers
+        const sample1 = L.marker([20.5935, 78.962], {
+            icon: L.divIcon({
+                className: 'sample-marker',
+                html: '<i class="fas fa-vial"></i>',
+                iconSize: [25, 25],
+                iconAnchor: [12, 12]
+            })
+        }).addTo(map).bindPopup('Soil Sample 1<br>Collected: 15 days ago<br>N:65%, P:40%, K:55%');
+        
+        const sample2 = L.marker([20.5925, 78.9618], {
+            icon: L.divIcon({
+                className: 'sample-marker',
+                html: '<i class="fas fa-vial"></i>',
+                iconSize: [25, 25],
+                iconAnchor: [12, 12]
+            })
+        }).addTo(map).bindPopup('Soil Sample 2<br>Collected: 15 days ago<br>N:68%, P:38%, K:58%');
+        
+        // Analyze button click
+        document.getElementById('analyze-btn').addEventListener('click', function() {
+            document.getElementById('loading-screen').style.display = 'flex';
+            
+            // Simulate API call delay
+            setTimeout(() => {
+                document.getElementById('loading-screen').style.display = 'none';
+                
+                // Update based on selected options
+                const cropType = document.getElementById('crop-select').value;
+                const growthStage = document.getElementById('growth-stage').value;
+                
+                // These would be real API responses in production
+                if (growthStage === 'flowering') {
+                    // Update recommendations for flowering stage
+                    document.querySelectorAll('.recommendation-item p')[0].innerHTML = 
+                        'Apply <strong>Urea (46-0-0)</strong> at <strong>40 kg/acre</strong> during flowering stage.';
+                    
+                    document.querySelectorAll('.recommendation-item p')[1].innerHTML = 
+                        'Use <strong>DAP (18-46-0)</strong> at <strong>25 kg/acre</strong> before next irrigation.';
+                    
+                    document.querySelector('.fertilizer-grid .fertilizer-card:nth-child(1) .fertilizer-amount').textContent = 
+                        '40 kg/acre needed';
+                } else if (growthStage === 'fruiting') {
+                    // Update recommendations for fruiting stage
+                    document.querySelectorAll('.recommendation-item p')[0].innerHTML = 
+                        'Reduce <strong>Urea (46-0-0)</strong> to <strong>20 kg/acre</strong> during fruiting.';
+                    
+                    document.querySelectorAll('.recommendation-item p')[3].innerHTML = 
+                        'Increase <strong>MOP (0-0-60)</strong> to <strong>30 kg/acre</strong> for better fruit development.';
+                    
+                    document.querySelector('.fertilizer-grid .fertilizer-card:nth-child(1) .fertilizer-amount').textContent = 
+                        '20 kg/acre needed';
+                    document.querySelector('.fertilizer-grid .fertilizer-card:nth-child(3) .fertilizer-amount').textContent = 
+                        '30 kg/acre needed';
+                }
+                
+                // Update progress bars slightly (simulating new analysis)
+                const nitrogenBar = document.querySelector('.progress-nitrogen');
+                const phosphorusBar = document.querySelector('.progress-phosphorus');
+                const potassiumBar = document.querySelector('.progress-potassium');
+                const organicBar = document.querySelector('.progress-organic');
+                
+                nitrogenBar.style.width = (65 + Math.random() * 5 - 2.5) + '%';
+                phosphorusBar.style.width = (40 + Math.random() * 5 - 2.5) + '%';
+                potassiumBar.style.width = (55 + Math.random() * 5 - 2.5) + '%';
+                organicBar.style.width = (35 + Math.random() * 5 - 2.5) + '%';
+                
+                // Update the displayed percentages
+                const nitrogenValue = parseInt(nitrogenBar.style.width);
+                const phosphorusValue = parseInt(phosphorusBar.style.width);
+                const potassiumValue = parseInt(potassiumBar.style.width);
+                const organicValue = parseInt(organicBar.style.width);
+                
+                document.querySelector('.nutrient-bar:nth-child(1) .nutrient-label span').textContent = 
+                    nitrogenValue + '% (' + (nitrogenValue > 70 ? 'High' : nitrogenValue > 50 ? 'Medium' : 'Low') + ')';
+                document.querySelector('.nutrient-bar:nth-child(2) .nutrient-label span').textContent = 
+                    phosphorusValue + '% (' + (phosphorusValue > 70 ? 'High' : phosphorusValue > 50 ? 'Medium' : 'Low') + ')';
+                document.querySelector('.nutrient-bar:nth-child(3) .nutrient-label span').textContent = 
+                    potassiumValue + '% (' + (potassiumValue > 70 ? 'High' : potassiumValue > 50 ? 'Medium' : 'Low') + ')';
+                document.querySelector('.nutrient-bar:nth-child(4) .nutrient-label span').textContent = 
+                    organicValue + '% (' + (organicValue > 50 ? 'High' : organicValue > 30 ? 'Medium' : 'Low') + ')';
+            }, 2000);
+        });
+    </script>
+</body>
+</html>

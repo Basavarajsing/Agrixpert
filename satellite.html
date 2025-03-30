@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KrishiAI - Satellite Monitoring</title>
+    <style>
+        :root {
+            --primary: #2e7d32;
+            --secondary: #8bc34a;
+            --accent: #ffc107;
+            --light: #f1f8e9;
+            --dark: #1b5e20;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            overflow-x: hidden;
+        }
+        
+        .satellite-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .satellite-header {
+            background: linear-gradient(135deg, var(--primary), var(--dark));
+            color: white;
+            padding: 30px 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .satellite-header h1 {
+            font-size: 36px;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .satellite-header p {
+            font-size: 18px;
+            max-width: 700px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .satellite-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('https://images.unsplash.com/photo-1464802686167-b939a6910659?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            opacity: 0.3;
+            z-index: 1;
+        }
+        
+        .satellite-controls {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 30px 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: center;
+        }
+        
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            min-width: 200px;
+            flex: 1;
+        }
+        
+        .control-group label {
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark);
+        }
+        
+        .control-group select, .control-group input {
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        
+        .control-button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .control-button:hover {
+            background-color: var(--dark);
+            transform: translateY(-2px);
+        }
+        
+        .satellite-view {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+        
+        .map-container {
+            height: 500px;
+            background-color: #eee;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        #satellite-map {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .map-overlay {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            max-width: 300px;
+        }
+        
+        .map-overlay h3 {
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+        
+        .map-overlay p {
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+        
+        .legend {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+        
+        .analysis-results {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .analysis-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .analysis-card h3 {
+            color: var(--dark);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .analysis-card h3 i {
+            color: var(--primary);
+        }
+        
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .metric:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        
+        .metric-label {
+            font-weight: 500;
+        }
+        
+        .metric-value {
+            font-weight: bold;
+            color: var(--primary);
+        }
+        
+        .positive {
+            color: #2e7d32;
+        }
+        
+        .warning {
+            color: #ff9800;
+        }
+        
+        .negative {
+            color: #f44336;
+        }
+        
+        .time-slider {
+            width: 100%;
+            margin: 20px 0;
+        }
+        
+        .timeline-container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .timeline {
+            display: flex;
+            overflow-x: auto;
+            gap: 15px;
+            padding: 10px 0;
+        }
+        
+        .timeline-item {
+            min-width: 120px;
+            padding: 15px;
+            background-color: var(--light);
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .timeline-item:hover {
+            background-color: var(--secondary);
+            color: white;
+        }
+        
+        .timeline-item.active {
+            background-color: var(--primary);
+            color: white;
+            font-weight: bold;
+        }
+        
+        .timeline-date {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .timeline-status {
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+        
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            color: white;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--accent);
+            animation: spin 1s ease-in-out infinite;
+            margin-bottom: 20px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        @media (max-width: 768px) {
+            .satellite-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .control-group {
+                width: 100%;
+            }
+            
+            .map-container {
+                height: 400px;
+            }
+            
+            .map-overlay {
+                position: static;
+                max-width: 100%;
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+</head>
+<body>
+    <div class="satellite-header">
+        <div class="satellite-bg"></div>
+        <h1>Satellite Field Monitoring</h1>
+        <p>AI-powered analysis of your fields using the latest satellite imagery</p>
+    </div>
+    
+    <div class="satellite-container">
+        <div class="satellite-controls">
+            <div class="control-group">
+                <label for="farm-select">Select Farm</label>
+                <select id="farm-select">
+                    <option value="farm1">Main Wheat Field (2.5 acres)</option>
+                    <option value="farm2">Vegetable Plot (1 acre)</option>
+                    <option value="farm3">Rice Paddy (3 acres)</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label for="analysis-type">Analysis Type</label>
+                <select id="analysis-type">
+                    <option value="ndvi">Vegetation Health (NDVI)</option>
+                    <option value="ndwi">Water Stress (NDWI)</option>
+                    <option value="pest">Pest Risk Analysis</option>
+                    <option value="nutrient">Nutrient Deficiency</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label for="date-range">Date Range</label>
+                <select id="date-range">
+                    <option value="7days">Last 7 Days</option>
+                    <option value="30days" selected>Last 30 Days</option>
+                    <option value="season">Current Season</option>
+                    <option value="custom">Custom Range</option>
+                </select>
+            </div>
+            <button class="control-button" id="analyze-btn">
+                <i class="fas fa-satellite-dish"></i> Analyze Field
+            </button>
+        </div>
+        
+        <div class="satellite-view">
+            <div class="map-container">
+                <div id="satellite-map"></div>
+                <div class="map-overlay">
+                    <h3><i class="fas fa-map-marked-alt"></i> Field Analysis</h3>
+                    <p>Health assessment based on latest satellite imagery processed with AI algorithms</p>
+                    <div class="legend">
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #006837;"></div>
+                            <span>Excellent (75-100%)</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #31a354;"></div>
+                            <span>Good (50-75%)</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #addd8e;"></div>
+                            <span>Moderate (25-50%)</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #f7fcb9;"></div>
+                            <span>Poor (0-25%)</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #d73027;"></div>
+                            <span>Critical</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="analysis-results">
+                <div class="analysis-card">
+                    <h3><i class="fas fa-heartbeat"></i> Field Health Summary</h3>
+                    <div class="metric">
+                        <span class="metric-label">Overall Health Score</span>
+                        <span class="metric-value positive">78%</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Healthy Area</span>
+                        <span class="metric-value">2.1 acres</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Stressed Area</span>
+                        <span class="metric-value warning">0.3 acres</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Critical Area</span>
+                        <span class="metric-value negative">0.1 acres</span>
+                    </div>
+                </div>
+                
+                <div class="analysis-card">
+                    <h3><i class="fas fa-calendar-alt"></i> Change Over Time</h3>
+                    <div class="metric">
+                        <span class="metric-label">30-Day Trend</span>
+                        <span class="metric-value positive">+12%</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Last Analysis</span>
+                        <span class="metric-value">66%</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Season Peak</span>
+                        <span class="metric-value">82%</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Compared to Neighbors</span>
+                        <span class="metric-value positive">+7%</span>
+                    </div>
+                </div>
+                
+                <div class="analysis-card">
+                    <h3><i class="fas fa-lightbulb"></i> Recommendations</h3>
+                    <div class="metric">
+                        <span class="metric-label">Water Requirement</span>
+                        <span class="metric-value">25mm this week</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Fertilizer Needed</span>
+                        <span class="metric-value">Urea @ 40kg</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Pest Risk</span>
+                        <span class="metric-value warning">Medium (Aphids)</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Action Items</span>
+                        <span class="metric-value">Inspect NW corner</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="timeline-container">
+                <h3><i class="fas fa-history"></i> Historical Analysis</h3>
+                <div class="timeline">
+                    <div class="timeline-item active">
+                        <div class="timeline-date">Today</div>
+                        <div class="timeline-status">
+                            <i class="fas fa-check-circle positive"></i> 78%
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-date">1 Week Ago</div>
+                        <div class="timeline-status">
+                            <i class="fas fa-check-circle positive"></i> 72%
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-date">2 Weeks Ago</div>
+                        <div class="timeline-status">
+                            <i class="fas fa-check-circle positive"></i> 68%
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-date">3 Weeks Ago</div>
+                        <div class="timeline-status">
+                            <i class="fas fa-exclamation-triangle warning"></i> 62%
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-date">4 Weeks Ago</div>
+                        <div class="timeline-status">
+                            <i class="fas fa-exclamation-triangle warning"></i> 58%
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-date">5 Weeks Ago</div>
+                        <div class="timeline-status">
+                            <i class="fas fa-exclamation-triangle warning"></i> 54%
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-date">6 Weeks Ago</div>
+                        <div class="timeline-status">
+                            <i class="fas fa-exclamation-triangle warning"></i> 50%
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="loading" id="loading-screen" style="display: none;">
+        <div class="spinner"></div>
+        <h3>Analyzing Satellite Data</h3>
+        <p>Processing latest imagery with AI algorithms...</p>
+    </div>
+    
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script>
+        // Initialize map
+        const map = L.map('satellite-map').setView([20.5937, 78.9629], 15);
+        
+        // Add satellite tile layer (using OpenStreetMap as placeholder)
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+        
+        // Simulate field boundary (in a real app, this would be the actual farmer's field)
+        const fieldBoundary = L.polygon([
+            [20.594, 78.961],
+            [20.594, 78.963],
+            [20.592, 78.963],
+            [20.592, 78.961]
+        ], {
+            color: '#2e7d32',
+            weight: 2,
+            fillOpacity: 0.1
+        }).addTo(map);
+        
+        // Simulate NDVI data (color-coded health areas)
+        const healthyArea = L.polygon([
+            [20.5938, 78.9615],
+            [20.5938, 78.9625],
+            [20.5925, 78.9625],
+            [20.5925, 78.9615]
+        ], {
+            color: '#006837',
+            weight: 1,
+            fillColor: '#006837',
+            fillOpacity: 0.7
+        }).addTo(map);
+        
+        const moderateArea = L.polygon([
+            [20.5938, 78.9625],
+            [20.5938, 78.963],
+            [20.5925, 78.963],
+            [20.5925, 78.9625]
+        ], {
+            color: '#addd8e',
+            weight: 1,
+            fillColor: '#addd8e',
+            fillOpacity: 0.7
+        }).addTo(map);
+        
+        const stressedArea = L.polygon([
+            [20.594, 78.961],
+            [20.594, 78.9615],
+            [20.592, 78.9615],
+            [20.592, 78.961]
+        ], {
+            color: '#f7fcb9',
+            weight: 1,
+            fillColor: '#f7fcb9',
+            fillOpacity: 0.7
+        }).addTo(map);
+        
+        const criticalArea = L.polygon([
+            [20.594, 78.9615],
+            [20.594, 78.962],
+            [20.5938, 78.962],
+            [20.5938, 78.9615]
+        ], {
+            color: '#d73027',
+            weight: 1,
+            fillColor: '#d73027',
+            fillOpacity: 0.7
+        }).addTo(map);
+        
+        // Add marker for problem area
+        L.marker([20.5935, 78.9618], {
+            icon: L.divIcon({
+                className: 'problem-marker',
+                html: '<i class="fas fa-exclamation-triangle"></i>',
+                iconSize: [30, 30]
+            })
+        }).addTo(map).bindPopup('Potential issue detected. Recommend inspection.');
+        
+        // Timeline interaction
+        const timelineItems = document.querySelectorAll('.timeline-item');
+        timelineItems.forEach(item => {
+            item.addEventListener('click', function() {
+                timelineItems.forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+                
+                // In a real app, this would update the map with historical data
+                document.getElementById('loading-screen').style.display = 'flex';
+                setTimeout(() => {
+                    document.getElementById('loading-screen').style.display = 'none';
+                }, 1500);
+            });
+        });
+        
+        // Analyze button click
+        document.getElementById('analyze-btn').addEventListener('click', function() {
+            document.getElementById('loading-screen').style.display = 'flex';
+            
+            // Simulate API call delay
+            setTimeout(() => {
+                document.getElementById('loading-screen').style.display = 'none';
+                
+                // Update results based on selected options
+                const analysisType = document.getElementById('analysis-type').value;
+                const farm = document.getElementById('farm-select').value;
+                
+                // These would be real API responses in production
+                if (analysisType === 'ndwi') {
+                    // Update for water stress analysis
+                    healthyArea.setStyle({fillColor: '#4575b4', color: '#4575b4'});
+                    moderateArea.setStyle({fillColor: '#91bfdb', color: '#91bfdb'});
+                    stressedArea.setStyle({fillColor: '#e0f3f8', color: '#e0f3f8'});
+                    criticalArea.setStyle({fillColor: '#fee090', color: '#fee090'});
+                    
+                    // Update legend
+                    document.querySelector('.map-overlay h3').innerHTML = '<i class="fas fa-tint"></i> Water Stress Analysis';
+                    document.querySelector('.map-overlay p').textContent = 'Water stress assessment based on NDWI index';
+                    
+                    const legendItems = document.querySelectorAll('.legend-item');
+                    legendItems[0].querySelector('span').textContent = 'Well Hydrated (75-100%)';
+                    legendItems[1].querySelector('span').textContent = 'Adequate Water (50-75%)';
+                    legendItems[2].querySelector('span').textContent = 'Mild Stress (25-50%)';
+                    legendItems[3].querySelector('span').textContent = 'Water Stressed (0-25%)';
+                    legendItems[4].querySelector('span').textContent = 'Severe Stress';
+                    
+                    // Update colors in legend
+                    legendItems[0].querySelector('.legend-color').style.backgroundColor = '#4575b4';
+                    legendItems[1].querySelector('.legend-color').style.backgroundColor = '#91bfdb';
+                    legendItems[2].querySelector('.legend-color').style.backgroundColor = '#e0f3f8';
+                    legendItems[3].querySelector('.legend-color').style.backgroundColor = '#fee090';
+                    legendItems[4].querySelector('.legend-color').style.backgroundColor = '#fc8d59';
+                } else {
+                    // Default to NDVI
+                    healthyArea.setStyle({fillColor: '#006837', color: '#006837'});
+                    moderateArea.setStyle({fillColor: '#addd8e', color: '#addd8e'});
+                    stressedArea.setStyle({fillColor: '#f7fcb9', color: '#f7fcb9'});
+                    criticalArea.setStyle({fillColor: '#d73027', color: '#d73027'});
+                    
+                    document.querySelector('.map-overlay h3').innerHTML = '<i class="fas fa-map-marked-alt"></i> Field Analysis';
+                    document.querySelector('.map-overlay p').textContent = 'Health assessment based on latest satellite imagery processed with AI algorithms';
+                    
+                    const legendItems = document.querySelectorAll('.legend-item');
+                    legendItems[0].querySelector('span').textContent = 'Excellent (75-100%)';
+                    legendItems[1].querySelector('span').textContent = 'Good (50-75%)';
+                    legendItems[2].querySelector('span').textContent = 'Moderate (25-50%)';
+                    legendItems[3].querySelector('span').textContent = 'Poor (0-25%)';
+                    legendItems[4].querySelector('span').textContent = 'Critical';
+                    
+                    legendItems[0].querySelector('.legend-color').style.backgroundColor = '#006837';
+                    legendItems[1].querySelector('.legend-color').style.backgroundColor = '#31a354';
+                    legendItems[2].querySelector('.legend-color').style.backgroundColor = '#addd8e';
+                    legendItems[3].querySelector('.legend-color').style.backgroundColor = '#f7fcb9';
+                    legendItems[4].querySelector('.legend-color').style.backgroundColor = '#d73027';
+                }
+            }, 2000);
+        });
+    </script>
+</body>
+</html>

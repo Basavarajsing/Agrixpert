@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KrishiAI - Precision Irrigation</title>
+    <style>
+        :root {
+            --primary: #2e7d32;
+            --secondary: #8bc34a;
+            --accent: #ffc107;
+            --light: #f1f8e9;
+            --dark: #1b5e20;
+            --water-blue: #2196F3;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            overflow-x: hidden;
+        }
+        
+        .irrigation-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .irrigation-header {
+            background: linear-gradient(135deg, var(--primary), var(--dark));
+            color: white;
+            padding: 30px 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .irrigation-header h1 {
+            font-size: 36px;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .irrigation-header p {
+            font-size: 18px;
+            max-width: 700px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .irrigation-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('https://images.unsplash.com/photo-1561361513-2d000a50f0dc?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            opacity: 0.3;
+            z-index: 1;
+        }
+        
+        .irrigation-controls {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 30px 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: center;
+        }
+        
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            min-width: 200px;
+            flex: 1;
+        }
+        
+        .control-group label {
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark);
+        }
+        
+        .control-group select, .control-group input {
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        
+        .control-button {
+            background-color: var(--water-blue);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .control-button:hover {
+            background-color: #0d8aee;
+            transform: translateY(-2px);
+        }
+        
+        .irrigation-view {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+        
+        .map-container {
+            height: 500px;
+            background-color: #eee;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        #irrigation-map {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .map-overlay {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            max-width: 300px;
+        }
+        
+        .map-overlay h3 {
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+        
+        .map-overlay p {
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+        
+        .legend {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+        
+        .irrigation-results {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .irrigation-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .irrigation-card h3 {
+            color: var(--dark);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .irrigation-card h3 i {
+            color: var(--water-blue);
+        }
+        
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .metric:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        
+        .metric-label {
+            font-weight: 500;
+        }
+        
+        .metric-value {
+            font-weight: bold;
+        }
+        
+        .water-adequate {
+            color: var(--water-blue);
+        }
+        
+        .water-low {
+            color: #ff9800;
+        }
+        
+        .water-critical {
+            color: #f44336;
+        }
+        
+        .irrigation-schedule {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        
+        .irrigation-schedule th, .irrigation-schedule td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .irrigation-schedule th {
+            background-color: var(--light);
+            color: var(--dark);
+        }
+        
+        .irrigation-schedule tr:hover {
+            background-color: #f9f9f9;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .status-pending {
+            background-color: #ff9800;
+        }
+        
+        .status-completed {
+            background-color: #4CAF50;
+        }
+        
+        .status-skipped {
+            background-color: #9E9E9E;
+        }
+        
+        .progress-container {
+            width: 100%;
+            background-color: #e0e0e0;
+            border-radius: 10px;
+            margin: 15px 0;
+            height: 20px;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            border-radius: 10px;
+            background-color: var(--water-blue);
+            width: 65%;
+            transition: width 0.5s;
+            position: relative;
+        }
+        
+        .progress-bar::after {
+            content: '65%';
+            position: absolute;
+            right: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .sensor-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .sensor-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            transition: all 0.3s;
+        }
+        
+        .sensor-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .sensor-value {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 10px 0;
+            color: var(--water-blue);
+        }
+        
+        .sensor-label {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            color: white;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--accent);
+            animation: spin 1s ease-in-out infinite;
+            margin-bottom: 20px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        @media (max-width: 768px) {
+            .irrigation-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .control-group {
+                width: 100%;
+            }
+            
+            .map-container {
+                height: 400px;
+            }
+            
+            .map-overlay {
+                position: static;
+                max-width: 100%;
+                margin-bottom: 20px;
+            }
+            
+            .irrigation-results {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+</head>
+<body>
+    <div class="irrigation-header">
+        <div class="irrigation-bg"></div>
+        <h1>Precision Irrigation System</h1>
+        <p>AI-powered water management for optimal crop growth and water conservation</p>
+    </div>
+    
+    <div class="irrigation-container">
+        <div class="irrigation-controls">
+            <div class="control-group">
+                <label for="field-select">Select Field</label>
+                <select id="field-select">
+                    <option value="field1">North Wheat Field (2.5 acres)</option>
+                    <option value="field2">South Vegetable Plot (1 acre)</option>
+                    <option value="field3">East Rice Paddy (3 acres)</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label for="irrigation-mode">Irrigation Mode</label>
+                <select id="irrigation-mode">
+                    <option value="auto">Automatic (AI Recommended)</option>
+                    <option value="manual">Manual Control</option>
+                    <option value="schedule">Custom Schedule</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label for="water-source">Water Source</label>
+                <select id="water-source">
+                    <option value="well">Well</option>
+                    <option value="canal">Canal</option>
+                    <option value="rainwater">Rainwater Harvesting</option>
+                </select>
+            </div>
+            <button class="control-button" id="update-btn">
+                <i class="fas fa-tint"></i> Update Irrigation
+            </button>
+        </div>
+        
+        <div class="irrigation-view">
+            <div class="map-container">
+                <div id="irrigation-map"></div>
+                <div class="map-overlay">
+                    <h3><i class="fas fa-water"></i> Soil Moisture Levels</h3>
+                    <p>Current soil moisture status based on sensor network</p>
+                    <div class="legend">
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #2196F3;"></div>
+                            <span>Adequate (>50%)</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #FFC107;"></div>
+                            <span>Low (30-50%)</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #F44336;"></div>
+                            <span>Critical (<30%)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="irrigation-results">
+                <div class="irrigation-card">
+                    <h3><i class="fas fa-info-circle"></i> Irrigation Summary</h3>
+                    <div class="metric">
+                        <span class="metric-label">Current Soil Moisture</span>
+                        <span class="metric-value water-adequate">58%</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Recommended Water</span>
+                        <span class="metric-value">25mm</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Next Irrigation</span>
+                        <span class="metric-value">Tomorrow 6:00 AM</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Water Saved This Month</span>
+                        <span class="metric-value water-adequate">12,500 liters</span>
+                    </div>
+                    
+                    <div class="progress-container">
+                        <div class="progress-bar"></div>
+                    </div>
+                    <p style="text-align: center; font-size: 14px;">Monthly water usage: 65% of target</p>
+                </div>
+                
+                <div class="irrigation-card">
+                    <h3><i class="fas fa-clock"></i> Irrigation Schedule</h3>
+                    <table class="irrigation-schedule">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Today</td>
+                                <td>6:00 AM</td>
+                                <td>20mm</td>
+                                <td><span class="status-indicator status-completed"></span>Completed</td>
+                            </tr>
+                            <tr>
+                                <td>Tomorrow</td>
+                                <td>6:00 AM</td>
+                                <td>25mm</td>
+                                <td><span class="status-indicator status-pending"></span>Pending</td>
+                            </tr>
+                            <tr>
+                                <td>Day After</td>
+                                <td>6:00 AM</td>
+                                <td>18mm</td>
+                                <td><span class="status-indicator status-pending"></span>Pending</td>
+                            </tr>
+                            <tr>
+                                <td>Yesterday</td>
+                                <td>6:00 AM</td>
+                                <td>15mm</td>
+                                <td><span class="status-indicator status-completed"></span>Completed</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="irrigation-card">
+                    <h3><i class="fas fa-cloud-sun-rain"></i> Weather Forecast</h3>
+                    <div class="metric">
+                        <span class="metric-label">Today</span>
+                        <span class="metric-value"><i class="fas fa-sun" style="color: #FFC107;"></i> Sunny, 34°C</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Tomorrow</span>
+                        <span class="metric-value"><i class="fas fa-cloud" style="color: #9E9E9E;"></i> Partly Cloudy, 32°C</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Next 3 Days</span>
+                        <span class="metric-value"><i class="fas fa-cloud-rain" style="color: #2196F3;"></i> 30% Rain Expected</span>
+                    </div>
+                    
+                    <h3 style="margin-top: 20px;"><i class="fas fa-sensor"></i> Sensor Network</h3>
+                    <div class="sensor-grid">
+                        <div class="sensor-card">
+                            <i class="fas fa-temperature-low" style="color: #F44336; font-size: 24px;"></i>
+                            <div class="sensor-value">28°C</div>
+                            <div class="sensor-label">Soil Temp</div>
+                        </div>
+                        <div class="sensor-card">
+                            <i class="fas fa-tint" style="color: #2196F3; font-size: 24px;"></i>
+                            <div class="sensor-value">58%</div>
+                            <div class="sensor-label">Moisture</div>
+                        </div>
+                        <div class="sensor-card">
+                            <i class="fas fa-wind" style="color: #4CAF50; font-size: 24px;"></i>
+                            <div class="sensor-value">12km/h</div>
+                            <div class="sensor-label">Wind Speed</div>
+                        </div>
+                        <div class="sensor-card">
+                            <i class="fas fa-cloud" style="color: #9E9E9E; font-size: 24px;"></i>
+                            <div class="sensor-value">24%</div>
+                            <div class="sensor-label">Humidity</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="loading" id="loading-screen" style="display: none;">
+        <div class="spinner"></div>
+        <h3>Updating Irrigation Plan</h3>
+        <p>Analyzing soil moisture and weather data...</p>
+    </div>
+    
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script>
+        // Initialize map
+        const map = L.map('irrigation-map').setView([20.5937, 78.9629], 16);
+        
+        // Add satellite tile layer (using OpenStreetMap as placeholder)
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+        
+        // Simulate field boundary (in a real app, this would be the actual farmer's field)
+        const fieldBoundary = L.polygon([
+            [20.594, 78.961],
+            [20.594, 78.963],
+            [20.592, 78.963],
+            [20.592, 78.961]
+        ], {
+            color: '#2196F3',
+            weight: 2,
+            fillOpacity: 0.1
+        }).addTo(map);
+        
+        // Simulate soil moisture zones
+        const adequateMoisture = L.polygon([
+            [20.5938, 78.9615],
+            [20.5938, 78.9625],
+            [20.5925, 78.9625],
+            [20.5925, 78.9615]
+        ], {
+            color: '#2196F3',
+            weight: 1,
+            fillColor: '#2196F3',
+            fillOpacity: 0.5
+        }).addTo(map).bindTooltip("Adequate Moisture: 58%");
+        
+        const lowMoisture = L.polygon([
+            [20.594, 78.961],
+            [20.594, 78.9615],
+            [20.592, 78.9615],
+            [20.592, 78.961]
+        ], {
+            color: '#FFC107',
+            weight: 1,
+            fillColor: '#FFC107',
+            fillOpacity: 0.5
+        }).addTo(map).bindTooltip("Low Moisture: 42%");
+        
+        const criticalMoisture = L.polygon([
+            [20.594, 78.9615],
+            [20.594, 78.962],
+            [20.5938, 78.962],
+            [20.5938, 78.9615]
+        ], {
+            color: '#F44336',
+            weight: 1,
+            fillColor: '#F44336',
+            fillOpacity: 0.5
+        }).addTo(map).bindTooltip("Critical Moisture: 28%");
+        
+        // Add irrigation system markers
+        const sprinkler1 = L.marker([20.5935, 78.9622], {
+            icon: L.divIcon({
+                className: 'sprinkler-marker',
+                html: '<i class="fas fa-shower" style="color: #2196F3;"></i>',
+                iconSize: [30, 30]
+            })
+        }).addTo(map).bindPopup('Sprinkler Zone 1<br>Status: Active<br>Last run: Today 6:00 AM');
+        
+        const sprinkler2 = L.marker([20.5928, 78.9618], {
+            icon: L.divIcon({
+                className: 'sprinkler-marker',
+                html: '<i class="fas fa-shower" style="color: #2196F3;"></i>',
+                iconSize: [30, 30]
+            })
+        }).addTo(map).bindPopup('Sprinkler Zone 2<br>Status: Active<br>Last run: Today 6:15 AM');
+        
+        const sensor1 = L.marker([20.5932, 78.9615], {
+            icon: L.divIcon({
+                className: 'sensor-marker',
+                html: '<i class="fas fa-sensor" style="color: #4CAF50;"></i>',
+                iconSize: [25, 25]
+            })
+        }).addTo(map).bindPopup('Soil Sensor 1<br>Moisture: 58%<br>Temp: 28°C');
+        
+        // Update button click
+        document.getElementById('update-btn').addEventListener('click', function() {
+            document.getElementById('loading-screen').style.display = 'flex';
+            
+            // Simulate API call delay
+            setTimeout(() => {
+                document.getElementById('loading-screen').style.display = 'none';
+                
+                // Update based on selected options
+                const irrigationMode = document.getElementById('irrigation-mode').value;
+                const field = document.getElementById('field-select').value;
+                
+                if (irrigationMode === 'manual') {
+                    // Show manual controls
+                    alert('Manual control panel would open here in production');
+                } else if (irrigationMode === 'schedule') {
+                    // Show schedule editor
+                    alert('Custom schedule editor would open here in production');
+                } else {
+                    // Default to automatic mode
+                    // Simulate updated recommendations
+                    adequateMoisture.setStyle({fillColor: '#2196F3', color: '#2196F3'});
+                    lowMoisture.setStyle({fillColor: '#FFC107', color: '#FFC107'});
+                    criticalMoisture.setStyle({fillColor: '#F44336', color: '#F44336'});
+                    
+                    // Update recommendation text
+                    document.querySelector('.irrigation-card .metric:nth-child(2) .metric-value').textContent = '28mm';
+                    document.querySelector('.irrigation-card .metric:nth-child(3) .metric-value').textContent = 'Tomorrow 5:30 AM';
+                    
+                    // Update progress bar
+                    const progressBar = document.querySelector('.progress-bar');
+                    progressBar.style.width = '58%';
+                    progressBar.textContent = '58%';
+                    progressBar.setAttribute('aria-valuenow', '58');
+                    progressBar.innerHTML = '58%';
+                }
+            }, 2000);
+        });
+        
+        // Simulate real-time sensor updates
+        setInterval(() => {
+            // Random small fluctuations in sensor values
+            const currentMoisture = document.querySelector('.sensor-grid .sensor-card:nth-child(2) .sensor-value');
+            const moistureValue = parseInt(currentMoisture.textContent);
+            const newMoisture = moistureValue + (Math.random() * 2 - 1);
+            currentMoisture.textContent = Math.max(20, Math.min(70, Math.round(newMoisture))) + '%';
+            
+            const currentTemp = document.querySelector('.sensor-grid .sensor-card:nth-child(1) .sensor-value');
+            const tempValue = parseInt(currentTemp.textContent);
+            const newTemp = tempValue + (Math.random() * 0.4 - 0.2);
+            currentTemp.textContent = Math.max(25, Math.min(35, Math.round(newTemp * 10) / 10)) + '°C';
+        }, 5000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,728 @@
+<?php
+session_start();
+
+// Check if user is logged in
+if (!isset($_SESSION['username'])) {
+    header("Location: login.html");
+    exit();
+}
+
+$username = $_SESSION['username'];
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgriXpert - Smart Farming for India</title>
+    <style>
+        :root {
+            --primary: #2e7d32;
+            --secondary: #8bc34a;
+            --accent: #ffc107;
+            --light: #f1f8e9;
+            --dark: #1b5e20;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--light);
+            color: #333;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--dark));
+            color: white;
+            padding: 20px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo i {
+            margin-right: 10px;
+            color: var(--accent);
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+        
+        nav ul li {
+            margin-left: 20px;
+        }
+        
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+            padding: 5px 10px;
+            border-radius: 4px;
+        }
+        
+        nav ul li a:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        .header-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            opacity: 0.2;
+            z-index: 1;
+        }
+        
+        .hero {
+            text-align: center;
+            padding: 80px 0;
+            position: relative;
+        }
+        
+        .hero h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+            color: white;
+        }
+        
+        .hero p {
+            font-size: 20px;
+            max-width: 700px;
+            margin: 0 auto 30px;
+            color: white;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            background-color: var(--accent);
+            color: var(--dark);
+            padding: 12px 30px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 18px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .features {
+            padding: 80px 0;
+            background-color: white;
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 50px;
+            color: var(--dark);
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        
+        .feature-card {
+            background-color: var(--light);
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .feature-icon {
+            font-size: 50px;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+        
+        .feature-card h3 {
+            margin-bottom: 15px;
+            color: var(--dark);
+        }
+        
+        .demo {
+            padding: 80px 0;
+            background-color: var(--light);
+        }
+        
+        .demo-container {
+            display: flex;
+            align-items: center;
+            gap: 50px;
+            margin-top: 50px;
+        }
+        
+        .demo-text {
+            flex: 1;
+        }
+        
+        .demo-visual {
+            flex: 1;
+            position: relative;
+            height: 400px;
+        }
+        
+        .phone-mockup {
+            width: 250px;
+            height: 500px;
+            background: #111;
+            border-radius: 30px;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            padding: 15px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+        
+        .phone-screen {
+            width: 100%;
+            height: 100%;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .screen-content {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary), var(--dark));
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+        
+        .screen-content.active {
+            opacity: 1;
+        }
+        
+        .screen-content h3 {
+            margin-bottom: 15px;
+        }
+        
+        .screen-nav {
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .nav-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .nav-dot.active {
+            background-color: white;
+            transform: scale(1.2);
+        }
+        
+        .testimonials {
+            padding: 80px 0;
+            background-color: white;
+        }
+        
+        .testimonial-slider {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            height: 300px;
+            overflow: hidden;
+        }
+        
+        .testimonial {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 30px;
+            opacity: 0;
+            transition: all 0.5s;
+            background-color: var(--light);
+            border-radius: 10px;
+        }
+        
+        .testimonial.active {
+            opacity: 1;
+        }
+        
+        .testimonial img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 20px;
+            border: 3px solid var(--primary);
+        }
+        
+        .testimonial-text {
+            font-style: italic;
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+        
+        .testimonial-author {
+            font-weight: bold;
+            color: var(--dark);
+        }
+        
+        .testimonial-nav {
+            display: flex;
+            justify-content: center;
+            margin-top: 30px;
+            gap: 10px;
+        }
+        
+        .testimonial-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: #ccc;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .testimonial-dot.active {
+            background-color: var(--primary);
+            transform: scale(1.2);
+        }
+        
+        .cta-section {
+            padding: 80px 0;
+            background: linear-gradient(135deg, var(--primary), var(--dark));
+            color: white;
+            text-align: center;
+        }
+        
+        .cta-section h2 {
+            margin-bottom: 30px;
+        }
+        
+        .form-group {
+            max-width: 500px;
+            margin: 0 auto 20px;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 15px;
+            border-radius: 50px;
+            border: none;
+            font-size: 16px;
+        }
+        
+        footer {
+            background-color: var(--dark);
+            color: white;
+            padding: 40px 0;
+            text-align: center;
+        }
+        
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+            gap: 20px;
+        }
+        
+        .footer-links a {
+            color: white;
+            text-decoration: none;
+        }
+        
+        .social-icons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .social-icons a {
+            color: white;
+            font-size: 24px;
+        }
+        
+        
+        .animated {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease-out;
+        }
+        
+        .animated.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+            }
+            
+            nav ul {
+                margin-top: 20px;
+            }
+            
+            .hero h1 {
+                font-size: 36px;
+            }
+            
+            .demo-container {
+                flex-direction: column;
+            }
+            
+            .demo-visual {
+                width: 100%;
+                height: 300px;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <header>
+        <div class="header-bg"></div>
+        <div class="container header-content">
+            <div class="logo">
+                <i class="fas fa-leaf"></i>
+                AgriXpert
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#demo">How It Works</a></li>
+                    <li><a href="#testimonials">Testimonials</a></li>
+                    <li><a href="https://cdn.botpress.cloud/webchat/v2.3/shareable.html?configUrl=https://files.bpcontent.cloud/2025/03/30/01/20250330015158-ZHOVOCMV.json">Get Started</a></li>
+                    <li><a href="logout.php">Logout</a></li>
+                </ul>
+            </nav>
+        </div>
+        <div class="container hero">
+            <h1 class="animated">Smart Farming for Smallholder Farmers</h1>
+            <p class="animated">AI-powered insights to optimize irrigation, fertilizers, and pesticides for higher yields with lower costs</p>
+<a href="https://cdn.botpress.cloud/webchat/v2.3/shareable.html?configUrl=https://files.bpcontent.cloud/2025/03/30/01/20250330015158-ZHOVOCMV.json" 
+   class="cta-button animated" 
+   target="_blank" 
+   rel="noopener noreferrer">
+   Try AgriXpert Today
+</a>
+             </div>
+    </header>
+    
+    <section class="features" id="features">
+        <div class="container">
+            <h2 class="section-title animated">Key Features</h2>
+            <div class="features-grid">
+                <div class="feature-card animated">
+                    <div class="feature-icon">
+                        <i class="fas fa-satellite-dish"></i>
+                    </div>
+                    <h3>Satellite Monitoring</h3>
+                    <p>Real-time field health analysis using satellite imagery and AI to detect issues before they become visible</p>
+                    <a href="satellite.html">Learn more</a>
+                </div>
+                <div class="feature-card animated">
+                    <div class="feature-icon">
+                        <i class="fas fa-tint"></i>
+                    </div>
+                    <h3>Precision Irrigation</h3>
+                    <p>Smart watering recommendations based on soil moisture, weather forecasts, and crop growth stage</p>
+                    <a href="precision.html">Learn more</a>
+                </div>
+                <div class="feature-card animated">
+                    <div class="feature-icon">
+                        <i class="fas fa-flask"></i>
+                    </div>
+                    <h3>Nutrient Management</h3>
+                    <p>AI-powered fertilizer recommendations tailored to your soil health and crop requirements</p>
+                    <a href="nutri.html">Learn more</a>
+                </div>
+                <div class="feature-card animated">
+                    <div class="feature-icon">
+                        <i class="fas fa-bug"></i>
+                    </div>
+                    <h3>Pest Alerts</h3>
+                    <p>Early detection of pest outbreaks and targeted treatment plans to minimize damage</p>
+                </div>
+                <div class="feature-card animated">
+                    <div class="feature-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h3>Multi-Platform Access</h3>
+                    <p>Get insights via WhatsApp, SMS, IVR, or mobile app - choose what works for you</p>
+                     <a href="multiplat.html">Learn more</a>
+
+                </div>
+                <div class="feature-card animated">
+                    <div class="feature-icon">
+                        <i class="fas fa-rupee-sign"></i>
+                    </div>
+                    <h3>Affordable Pricing</h3>
+                    <p>Designed for smallholder farmers with plans starting at just ₹50/month</p>
+                    <a href="plans.html">Learn more</a>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="demo" id="demo">
+        <div class="container">
+            <h2 class="section-title animated">See AgriXpert in Action</h2>
+            <div class="demo-container">
+                <div class="demo-text animated">
+                    <h3>Simple Interface, Powerful Technology</h3>
+                    <p>AgriXpert brings complex satellite data and AI analysis to your fingertips through an interface designed for farmers.</p>
+                    <p>Our technology works with the devices you already have - no expensive equipment required.</p>
+                    <ul style="margin-top: 20px; list-style-position: inside;">
+                        <li>Get weekly field health reports</li>
+                        <li>Receive actionable alerts</li>
+                        <li>Track your farm's progress</li>
+                        <li>Connect with agricultural experts</li>
+                    </ul>
+                </div>
+                <div class="demo-visual">
+                    <div class="phone-mockup">
+                        <div class="phone-screen">
+                            <div class="screen-content active">
+                                <i class="fas fa-satellite-dish" style="font-size: 40px; margin-bottom: 20px;"></i>
+                                <h3>Field Health Report</h3>
+                                <p>Your wheat field shows excellent growth with 85% health score</p>
+                                <div class="screen-nav">
+                                    <div class="nav-dot active"></div>
+                                    <div class="nav-dot"></div>
+                                    <div class="nav-dot"></div>
+                                </div>
+                            </div>
+                            <div class="screen-content">
+                                <i class="fas fa-tint" style="font-size: 40px; margin-bottom: 20px;"></i>
+                                <h3>Irrigation Advice</h3>
+                                <p>Water requirement: 25mm this week. Next irrigation in 3 days.</p>
+                                <div class="screen-nav">
+                                    <div class="nav-dot"></div>
+                                    <div class="nav-dot active"></div>
+                                    <div class="nav-dot"></div>
+                                </div>
+                            </div>
+                            <div class="screen-content">
+                                <i class="fas fa-flask" style="font-size: 40px; margin-bottom: 20px;"></i>
+                                <h3>Fertilizer Guide</h3>
+                                <p>Apply urea @ 50kg/acre before next irrigation</p>
+                                <div class="screen-nav">
+                                    <div class="nav-dot"></div>
+                                    <div class="nav-dot"></div>
+                                    <div class="nav-dot active"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="testimonials" id="testimonials">
+        <div class="container">
+            <h2 class="section-title animated">What Farmers Say</h2>
+            <div class="testimonial-slider">
+                <div class="testimonial active">
+                    <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Farmer">
+                    <p class="testimonial-text">"AgriXpert helped me reduce my water usage by 30% while increasing my wheat yield. The pest alerts saved my crop last season!"</p>
+                    <p class="testimonial-author">- Ramesh Patel, Farmer from Gujarat</p>
+                </div>
+                <div class="testimonial">
+                    <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Farmer">
+                    <p class="testimonial-text">"As a woman farmer with limited resources, AgriXpert's affordable advice has transformed how I manage my small plot. I'm now earning more with less work."</p>
+                    <p class="testimonial-author">- Sunita Devi, Farmer from Bihar</p>
+                </div>
+                <div class="testimonial">
+                    <img src="https://randomuser.me/api/portraits/men/75.jpg" alt="Farmer">
+                    <p class="testimonial-text">"The fertilizer recommendations have cut my costs in half while improving soil health. I've recommended KrishiAI to everyone in my village."</p>
+                    <p class="testimonial-author">- Vijay Kumar, Farmer from Punjab</p>
+                </div>
+            </div>
+            <div class="testimonial-nav">
+                <div class="testimonial-dot active" data-index="0"></div>
+                <div class="testimonial-dot" data-index="1"></div>
+                <div class="testimonial-dot" data-index="2"></div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="cta-section" id="cta">
+        <div class="container">
+            <h2 class="animated">Ready to Transform Your Farming?</h2>
+            <p class="animated" style="margin-bottom: 30px; max-width: 600px; margin-left: auto; margin-right: auto;">Join thousands of farmers using AgriXpert to grow more with less. Available in Hindi,Kannada, Tamil, Telugu, Marathi, and Bangla.</p>
+            <form class="animated">
+                <div class="form-group">
+                    <input type="tel" placeholder="Enter your mobile number">
+                </div>
+                <a href="#" class="cta-button">Get Started Now</a>
+            </form>
+        </div>
+
+    </section>
+  
+    <footer>
+        <div class="container">
+            <div class="logo" style="margin-bottom: 20px;">
+                <i class="fas fa-leaf"></i>
+                AgriXpert
+            </div>
+            <div class="footer-links animated">
+                <a href="#">About Us</a>
+                <a href="#">Technology</a>
+                <a href="#">Partners</a>
+                <a href="#">Contact</a>
+            </div>
+            <div class="social-icons animated">
+                <a href="#"><i class="fab fa-whatsapp"></i></a>
+                <a href="#"><i class="fab fa-facebook"></i></a>
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="#"><i class="fab fa-youtube"></i></a>
+            </div>
+            <p class="animated">© 2023 AgriXpert Technologies. Empowering India's farmers with AI.</p>
+        </div>
+    </footer>
+    
+    <script>
+        // Animation on scroll
+        function checkVisibility() {
+            const elements = document.querySelectorAll('.animated');
+            elements.forEach(element => {
+                const elementTop = element.getBoundingClientRect().top;
+                const windowHeight = window.innerHeight;
+                if (elementTop < windowHeight - 100) {
+                    element.classList.add('visible');
+                }
+            });
+        }
+        
+        window.addEventListener('scroll', checkVisibility);
+        window.addEventListener('load', checkVisibility);
+        
+        // Phone demo slider
+        const screenContents = document.querySelectorAll('.screen-content');
+        const navDots = document.querySelectorAll('.nav-dot');
+        let currentSlide = 0;
+        
+        function showSlide(index) {
+            screenContents.forEach(content => content.classList.remove('active'));
+            navDots.forEach(dot => dot.classList.remove('active'));
+            
+            screenContents[index].classList.add('active');
+            navDots[index].classList.add('active');
+            currentSlide = index;
+        }
+        
+        navDots.forEach((dot, index) => {
+            dot.addEventListener('click', () => showSlide(index));
+        });
+        
+        setInterval(() => {
+            let nextSlide = (currentSlide + 1) % screenContents.length;
+            showSlide(nextSlide);
+        }, 3000);
+        
+        // Testimonial slider
+        const testimonials = document.querySelectorAll('.testimonial');
+        const testimonialDots = document.querySelectorAll('.testimonial-dot');
+        let currentTestimonial = 0;
+        
+        function showTestimonial(index) {
+            testimonials.forEach(testimonial => testimonial.classList.remove('active'));
+            testimonialDots.forEach(dot => dot.classList.remove('active'));
+            
+            testimonials[index].classList.add('active');
+            testimonialDots[index].classList.add('active');
+            currentTestimonial = index;
+        }
+        
+        testimonialDots.forEach((dot, index) => {
+            dot.addEventListener('click', () => showTestimonial(index));
+        });
+        
+        setInterval(() => {
+            let nextTestimonial = (currentTestimonial + 1) % testimonials.length;
+            showTestimonial(nextTestimonial);
+        }, 5000);
+        
+        // Smooth scrolling for navigation
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+<script src="https://cdn.botpress.cloud/webchat/v2.2/inject.js"></script>
+<script src="https://files.bpcontent.cloud/2025/03/30/01/20250330015158-PNLTBBCN.js"></script>
+   </html>

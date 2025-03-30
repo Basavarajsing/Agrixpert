@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KrishiApp - Affordable Plans</title>
+    <style>
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* Header Styles */
+        header {
+            background-color: #2E8B57;
+            color: white;
+            padding: 15px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo img {
+            height: 40px;
+            margin-right: 10px;
+        }
+        
+        .logo h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        /* Pricing Section Styles */
+        .pricing-section {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            padding: 25px;
+            margin-top: 30px;
+        }
+        
+        .section-title {
+            color: #2E8B57;
+            margin-bottom: 10px;
+            font-size: 1.8rem;
+            text-align: center;
+        }
+        
+        .section-subtitle {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #555;
+            font-size: 1.1rem;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .highlight-badge {
+            display: inline-block;
+            background-color: #FFD166;
+            color: #333;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+        
+        /* Pricing Tabs */
+        .pricing-tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #eee;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .tab-btn {
+            padding: 10px 20px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            color: #666;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .tab-btn.active {
+            color: #2E8B57;
+            font-weight: 600;
+        }
+        
+        .tab-btn.active:after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background-color: #2E8B57;
+        }
+        
+        /* Pricing Cards */
+        .pricing-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin-top: 20px;
+        }
+        
+        .pricing-card {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.08);
+            padding: 30px;
+            position: relative;
+            transition: all 0.3s ease;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .pricing-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 25px rgba(0,0,0,0.1);
+        }
+        
+        .pricing-card.popular {
+            border: 2px solid #2E8B57;
+        }
+        
+        .popular-tag {
+            position: absolute;
+            top: -10px;
+            right: 20px;
+            background-color: #2E8B57;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .plan-name {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #2E8B57;
+        }
+        
+        .plan-price {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        .plan-price span {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #666;
+        }
+        
+        .plan-features {
+            margin-bottom: 25px;
+        }
+        
+        .plan-features li {
+            margin-bottom: 10px;
+            position: relative;
+            padding-left: 25px;
+            list-style-type: none;
+        }
+        
+        .plan-features li:before {
+            content: "✓";
+            color: #2E8B57;
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+        
+        .plan-features li.disabled {
+            color: #999;
+        }
+        
+        .plan-features li.disabled:before {
+            content: "✗";
+            color: #ccc;
+        }
+        
+        .btn-subscribe {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background-color: #2E8B57;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            text-decoration: none;
+        }
+        
+        .btn-subscribe:hover {
+            background-color: #247348;
+        }
+        
+        .btn-outline {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background-color: transparent;
+            color: #2E8B57;
+            border: 1px solid #2E8B57;
+            border-radius: 4px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            text-decoration: none;
+            margin-top: 10px;
+        }
+        
+        .btn-outline:hover {
+            background-color: #f0f7f3;
+        }
+        
+        /* Testimonials */
+        .testimonials {
+            margin-top: 50px;
+            text-align: center;
+        }
+        
+        .testimonial-title {
+            color: #2E8B57;
+            margin-bottom: 30px;
+            font-size: 1.5rem;
+        }
+        
+        .testimonial-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .testimonial-card {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+            padding: 20px;
+            text-align: left;
+        }
+        
+        .testimonial-text {
+            font-style: italic;
+            margin-bottom: 15px;
+            color: #555;
+        }
+        
+        .testimonial-author {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .testimonial-location {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        /* FAQ Section */
+        .faq-section {
+            margin-top: 50px;
+        }
+        
+        .faq-title {
+            color: #2E8B57;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            text-align: center;
+        }
+        
+        .faq-item {
+            margin-bottom: 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .faq-question {
+            padding: 15px 20px;
+            background-color: #f8f9fa;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .faq-answer {
+            padding: 0 20px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+        
+        .faq-answer.show {
+            padding: 15px 20px;
+            max-height: 500px;
+        }
+        
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .pricing-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .logo {
+                margin-bottom: 15px;
+            }
+            
+            .pricing-tabs {
+                flex-wrap: wrap;
+            }
+            
+            .tab-btn {
+                padding: 8px 15px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container header-content">
+            <div class="logo">
+                <img src="https://via.placeholder.com/40x40?text=KA" alt="KrishiApp Logo">
+                <h1>KrishiApp</h1>
+            </div>
+            <nav>
+                <a href="#" class="btn-outline" style="width: auto; padding: 8px 15px;">Farmer Login</a>
+            </nav>
+        </div>
+    </header>
+    
+    <main class="container">
+        <div class="pricing-section">
+            <div style="text-align: center;">
+                <div class="highlight-badge">Designed for smallholder farmers</div>
+            </div>
+            <h2 class="section-title">Affordable Plans for Every Farmer</h2>
+            <p class="section-subtitle">Get expert agricultural advice and tools with plans starting at just ₹50/month. Choose what works best for your farm.</p>
+            
+            <div class="pricing-tabs">
+                <button class="tab-btn active" data-duration="monthly">Monthly</button>
+                <button class="tab-btn" data-duration="yearly">Yearly (Save 20%)</button>
+            </div>
+            
+            <div class="pricing-cards">
+                <!-- Basic Plan -->
+                <div class="pricing-card">
+                    <h3 class="plan-name">Basic</h3>
+                    <div class="plan-price">₹50 <span>/month</span></div>
+                    <ul class="plan-features">
+                        <li>Daily weather updates</li>
+                        <li>Essential crop advice</li>
+                        <li>Basic pest alerts</li>
+                        <li class="disabled">Market price updates</li>
+                        <li class="disabled">Soil health analysis</li>
+                        <li class="disabled">Expert consultations</li>
+                    </ul>
+                    <button class="btn-subscribe">Subscribe Now</button>
+                    <button class="btn-outline">Learn More</button>
+                </div>
+                
+                <!-- Popular Plan -->
+                <div class="pricing-card popular">
+                    <div class="popular-tag">Most Popular</div>
+                    <h3 class="plan-name">Standard</h3>
+                    <div class="plan-price">₹100 <span>/month</span></div>
+                    <ul class="plan-features">
+                        <li>All Basic features</li>
+                        <li>Detailed market prices</li>
+                        <li>Advanced pest alerts</li>
+                        <li>Soil health basics</li>
+                        <li>Monthly expert Q&A</li>
+                        <li class="disabled">Priority consultations</li>
+                    </ul>
+                    <button class="btn-subscribe">Subscribe Now</button>
+                    <button class="btn-outline">Learn More</button>
+                </div>
+                
+                <!-- Premium Plan -->
+                <div class="pricing-card">
+                    <h3 class="plan-name">Premium</h3>
+                    <div class="plan-price">₹200 <span>/month</span></div>
+                    <ul class="plan-features">
+                        <li>All Standard features</li>
+                        <li>Personalized farm advice</li>
+                        <li>Detailed soil analysis</li>
+                        <li>Weekly expert consultations</li>
+                        <li>Priority support</li>
+                        <li>Disease diagnosis</li>
+                    </ul>
+                    <button class="btn-subscribe">Subscribe Now</button>
+                    <button class="btn-outline">Learn More</button>
+                </div>
+            </div>
+            
+            <!-- Testimonials Section -->
+            <div class="testimonials">
+                <h3 class="testimonial-title">Trusted by 50,000+ Farmers Across India</h3>
+                <div class="testimonial-cards">
+                    <div class="testimonial-card">
+                        <p class="testimonial-text">"KrishiApp's Basic plan helped me increase my wheat yield by 20% with simple weather alerts and planting advice."</p>
+                        <p class="testimonial-author">Rajesh Kumar</p>
+                        <p class="testimonial-location">Small Farmer, Punjab</p>
+                    </div>
+                    <div class="testimonial-card">
+                        <p class="testimonial-text">"The Standard plan's market prices help me get better rates for my vegetables. Worth every rupee!"</p>
+                        <p class="testimonial-author">Priya Sharma</p>
+                        <p class="testimonial-location">Vegetable Grower, Maharashtra</p>
+                    </div>
+                    <div class="testimonial-card">
+                        <p class="testimonial-text">"With Premium, the expert saved my mango crop from disease. The ₹200/month saved me ₹20,000 in losses."</p>
+                        <p class="testimonial-author">Arun Patel</p>
+                        <p class="testimonial-location">Orchard Owner, Gujarat</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- FAQ Section -->
+            <div class="faq-section">
+                <h3 class="faq-title">Frequently Asked Questions</h3>
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <span>Can I change plans later?</span>
+                        <span>+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Yes, you can upgrade or downgrade your plan at any time. The changes will take effect at the start of your next billing cycle.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <span>Do you offer discounts for groups?</span>
+                        <span>+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>We offer special rates for farmer cooperatives and self-help groups with 10+ members. Contact our support team for details.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <span>What payment methods do you accept?</span>
+                        <span>+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>We accept UPI, credit/debit cards, net banking, and mobile wallets. We also support cash payments through our field agents.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <span>Is there a free trial available?</span>
+                        <span>+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Yes! You can try our Basic plan free for 7 days with no payment required. No commitment, cancel anytime.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Toggle between monthly and yearly plans
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                
+                const duration = this.dataset.duration;
+                const prices = {
+                    monthly: {
+                        basic: 50,
+                        standard: 100,
+                        premium: 200
+                    },
+                    yearly: {
+                        basic: 40,
+                        standard: 80,
+                        premium: 160
+                    }
+                };
+                
+                // Update prices
+                document.querySelectorAll('.plan-price').forEach((priceEl, index) => {
+                    const plans = ['basic', 'standard', 'premium'];
+                    const newPrice = prices[duration][plans[index]];
+                    const suffix = duration === 'monthly' ? '/month' : '/year';
+                    
+                    priceEl.innerHTML = ₹${newPrice} <span>${suffix}</span>;
+                });
+            });
+        });
+        
+        // Toggle FAQ answers
+        function toggleFAQ(question) {
+            const answer = question.parentElement.querySelector('.faq-answer');
+            const isShowing = answer.classList.contains('show');
+            
+            // Close all FAQs first
+            document.querySelectorAll('.faq-answer').forEach(el => {
+                el.classList.remove('show');
+                el.previousElementSibling.querySelector('span:last-child').textContent = '+';
+            });
+            
+            // Open this one if it wasn't already showing
+            if (!isShowing) {
+                answer.classList.add('show');
+                question.querySelector('span:last-child').textContent = '-';
+            }
+        }
+        
+        // Simulate subscription button clicks
+        document.querySelectorAll('.btn-subscribe').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const planName = this.parentElement.querySelector('.plan-name').textContent;
+                alert(Thank you for choosing ${planName}! You'll be redirected to the payment page.);
+            });
+        });
+    </script>
+</body>
+</html>

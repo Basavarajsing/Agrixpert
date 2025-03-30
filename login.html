@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgriXpert - Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-image: linear-gradient(rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.8)), 
+                              url('/api/placeholder/1000/600');
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .container {
+            display: flex;
+            max-width: 900px;
+            width: 100%;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .logo-section {
+            flex: 1;
+            background-color: #e8f5e9;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+        }
+        
+        .login-section {
+            flex: 1;
+            background-color: white;
+            padding: 40px;
+        }
+        
+        .logo {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 20px;
+        }
+        
+        .brand-name {
+            font-size: 28px;
+            font-weight: bold;
+            color: #33691e;
+            margin-bottom: 10px;
+        }
+        
+        .tagline {
+            font-size: 14px;
+            color: #689f38;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            color: #33691e;
+            margin-bottom: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: 500;
+        }
+        
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        
+        button {
+            background-color: #388e3c;
+            color: white;
+            border: none;
+            padding: 14px;
+            width: 100%;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-bottom: 15px;
+        }
+        
+        button:hover {
+            background-color: #2e7d32;
+        }
+        
+        .footer {
+            margin-top: 20px;
+            text-align: center;
+        }
+        
+        .footer a {
+            color: #388e3c;
+            text-decoration: none;
+        }
+        
+        .footer a:hover {
+            text-decoration: underline;
+        }
+        
+        .alert {
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            display: none;
+        }
+        
+        .alert-success {
+            background-color: #dff0d8;
+            color: #3c763d;
+            border: 1px solid #d6e9c6;
+        }
+        
+        .alert-danger {
+            background-color: #f2dede;
+            color: #a94442;
+            border: 1px solid #ebccd1;
+        }
+        
+        .remember-me {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .remember-me input {
+            margin-right: 10px;
+        }
+        
+        .forgot-password {
+            text-align: right;
+            margin-bottom: 20px;
+        }
+        
+        .forgot-password a {
+            color: #777;
+            font-size: 14px;
+            text-decoration: none;
+        }
+        
+        .forgot-password a:hover {
+            color: #388e3c;
+            text-decoration: underline;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                margin: 20px;
+            }
+            
+            .logo-section {
+                padding: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo-section">
+            <svg class="logo" viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
+                <!-- Background circle -->
+                <circle cx="150" cy="100" r="70" fill="#e8f5e9" />
+                
+                <!-- Wheat symbol -->
+                <g transform="translate(110, 65) scale(0.8)">
+                    <!-- Stem -->
+                    <path d="M50 120 L50 30" stroke="#388e3c" stroke-width="3" fill="none" />
+                    
+                    <!-- Left wheat spikes -->
+                    <path d="M50 50 C30 45, 20 35, 25 25" stroke="#689f38" stroke-width="2" fill="none" />
+                    <path d="M50 60 C30 55, 15 50, 20 35" stroke="#689f38" stroke-width="2" fill="none" />
+                    <path d="M50 70 C30 65, 10 60, 15 45" stroke="#689f38" stroke-width="2" fill="none" />
+                    <path d="M50 80 C30 75, 10 70, 15 55" stroke="#689f38" stroke-width="2" fill="none" />
+                    <path d="M50 90 C30 85, 10 80, 15 65" stroke="#689f38" stroke-width="2" fill="none" />
+                    
+                    <!-- Right wheat spikes -->
+                    <path d="M50 50 C70 45, 80 35, 75 25" stroke="#689f38" stroke-width="2" fill="none" />
+                    <path d="M50 60 C70 55, 85 50, 80 35" stroke="#689f38" stroke-width="2" fill="none" />
+                    <path d="M50 70 C70 65, 90 60, 85 45" stroke="#689f38" stroke-width="2" fill="none" />
+                    <path d="M50 80 C70 75, 90 70, 85 55" stroke="#689f38" stroke-width="2" fill="none" />
+                    <path d="M50 90 C70 85, 90 80, 85 65" stroke="#689f38" stroke-width="2" fill="none" />
+                </g>
+                
+                <!-- Text -->
+                <text x="150" y="155" font-family="Arial, sans-serif" font-size="22" font-weight="bold" text-anchor="middle" fill="#33691e">AgriTech</text>
+            </svg>
+            <div class="brand-name">AgriXpert</div>
+            <div class="tagline">Growing the future with technology</div>
+        </div>
+        
+        <div class="login-section">
+            <h1>Login to Your Account</h1>
+            <div id="alertBox" class="alert"></div>
+            <form id="loginForm" method="post">
+                <div class="form-group">
+                    <label for="username">Username or Email</label>
+                    <input type="text" id="username" name="username" placeholder="Enter your username or email" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                </div>
+                
+                <div class="remember-me">
+                    <input type="checkbox" id="remember" name="remember">
+                    <label for="remember">Remember me</label>
+                </div>
+                
+                <div class="forgot-password">
+                    <a href="#">Forgot password?</a>
+                </div>
+                
+                <button type="submit">Login</button>
+                
+                <div class="footer">
+                    <a href="register.html">Don't have an account? Register</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Collect form data
+            const formData = new FormData(this);
+            
+            // Send the login data to the server using fetch
+            fetch('login.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    showAlert('Login successful! Redirecting...', 'success');
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 2000);
+                } else {
+                    showAlert(data.message, 'danger');
+                }
+            })
+            .catch(error => {
+                showAlert('An error occurred. Please try again.', 'danger');
+                console.error('Error:', error);
+            });
+        });
+
+        function showAlert(message, type) {
+            const alertBox = document.getElementById('alertBox');
+            alertBox.textContent = message;
+            alertBox.className = 'alert alert-' + type;
+            alertBox.style.display = 'block';
+            
+            // Auto hide after 5 seconds for success messages
+            if (type === 'success') {
+                setTimeout(() => {
+                    alertBox.style.display = 'none';
+                }, 5000);
+            }
+        }
+    </script>
+</body>
+</html>
