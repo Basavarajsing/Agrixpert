@@ -21,6 +21,9 @@ AgriXpert is an AI-driven solution utilizing satellite imagery, GIS, and ML to p
 🌾 Scenario Explanation
 AgriXpert helps farmers make data-driven decisions. For instance, based on satellite imagery, the system may detect moisture stress and recommend specific irrigation techniques. Additionally, it analyzes soil and crop data to suggest optimal fertilizer applications, ensuring healthier yields.
 
+Demo video link:
+https://drive.google.com/file/d/11QB0-CFSHQFCUc-zrju1-oEOXc1sQHXC/view?usp=drivesdk
+
  📧 Contact
 For any questions or suggestions, feel free to reach out at basavarajsing2005@gmail.com
 
